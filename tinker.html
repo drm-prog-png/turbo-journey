@@ -2,11 +2,53 @@
 <html>
 <head>
 <style>
+  /* Make sure form and its elements are visible */
+  #prompt-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
 
+  #prompt-input {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #999;
+    border-radius: 4px;
+  }
+
+  #prompt-form button[type="submit"] {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  #prompt-form button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+
+  #output {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 2rem;
+  }
 </style>
 </head>
 <body>
-<button type="button" id="generate-btn">Generate</button>
+<form id="prompt-form">
+  <input type="text" id="prompt-input" placeholder="Enter your prompt here">
+  <button type="submit">Submit Prompt</button>
+</form>
 <div id="output" style="white-space: pre-wrap; margin-top: 1rem;"></div>
 
 <script type="module" src="./index.js"></script>

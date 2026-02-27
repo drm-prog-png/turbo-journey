@@ -1,14 +1,28 @@
-document.getElementById('generate-btn').addEventListener('click', async () => {
-  console.log('🖱️ [DEBUG] Generate button clicked');
+// ===== FORM SUBMISSION HANDLER =====
+// THIS WAS MISSING! The form wasn't working because there was no event listener
+// Now it listens for form submission and sends the user's custom prompt
+document.getElementById('prompt-form').addEventListener('submit', async (e) => {
+  // Prevent the default form submission behavior (page reload)
+  e.preventDefault();
+  console.log('📋 [DEBUG] Form submitted - custom prompt from user');
   
-  const prompt = 'Write a short creative story in 100 words.';
+  // Get the user's input from the text field
+  const prompt = document.getElementById('prompt-input').value;
   const outputDiv = document.getElementById('output');
   
+  // Validate that the prompt is not empty
+  console.log('🔍 [DEBUG] Validating prompt input');
+  if (!prompt.trim()) {
+    console.warn('⚠️ [WARNING] Empty prompt - user must enter text');
+    outputDiv.textContent = '❌ Please enter a prompt';
+    return;
+  }
+  
   outputDiv.textContent = 'Loading...';
-  console.log('📝 [DEBUG] Prompt to send:', prompt);
+  console.log('📝 [DEBUG] User prompt:', prompt.substring(0, 50) + (prompt.length > 50 ? '...' : ''));
   
   try {
-    console.log('🌐 [DEBUG] Sending request to /api/generate');
+    console.log('🌐 [DEBUG] Sending POST request to /api/generate');
     const response = await fetch('/api/generate', {
       method: 'POST',
       headers: {
@@ -30,6 +44,7 @@ document.getElementById('generate-btn').addEventListener('click', async () => {
     console.log('✅ [DEBUG] Response received successfully');
     console.log('📄 [DEBUG] Result length:', data.result.length, 'characters');
     
+    // Display the result in the output div
     outputDiv.textContent = data.result;
   } catch (error) {
     console.error('❌ [ERROR] Fetch error:', error.message);
