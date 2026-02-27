@@ -1,56 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-  /* Make sure form and its elements are visible */
-  #prompt-form {
-    display: flex;
-    gap: 10px;
-    margin-top: 1rem;
-    padding: 1rem;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-  }
-
-  #prompt-input {
-    flex: 1;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #999;
-    border-radius: 4px;
-  }
-
-  #prompt-form button[type="submit"] {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  #prompt-form button[type="submit"]:hover {
-    background-color: #0056b3;
-  }
-
-  #output {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    min-height: 2rem;
-  }
-</style>
+<link rel="stylesheet" href="./styles.css">
+<title>AI Travel Assistant</title>
 </head>
 <body>
+  <div class="container">
+  <h1>AI Travel Assistant</h1>
+  <p>Get personalized travel recommendations and insights based on your preferences. Select from the options</p>
 <form id="prompt-form">
   <input type="text" id="prompt-input" placeholder="Enter your prompt here">
   <button type="submit">Submit Prompt</button>
 </form>
+
+<!-- Array of selectable prompt buttons -->
+<div id="prompt-buttons-container">
+  <h3>What do you want to do?</h3>
+  <div class="prompt-buttons">
+    <button class="prompt-btn" data-value="Plan an itenerary.">Itenerary</button>
+    <button class="prompt-btn" data-value="Restaurants, Cafes and hidden gems.">Restaurants, Cafes and Hidden Gems</button>
+    <button class="prompt-btn" data-value="Translate">Translate</button>
+    <button class="prompt-btn" data-value="Important tourist,music Events">Events</button>
+    <button class="prompt-btn" data-value="Curated playlist">Playlist</button>
+    <button class="prompt-btn" data-value="Themed routes,multimodal routes,multi vehicle-type routes SEPARATELY + their cost + ride sharing / taxi integration reviews + vehicle avalability and timing(like bike,scooter for rental)">Routes</button>
+    <button class="prompt-btn" data-value="Local tips and cultural experiences and etiquette + Budget recommendations and cost-saving tips">Local Tips</button>  
+    <button class="prompt-btn" data-value="About, history, currency, languages - list history in the last as a paragraph and the others as bullet points">About</button>  </div>
+  </div>
+
 <div id="output" style="white-space: pre-wrap; margin-top: 1rem;"></div>
 
 <script type="module" src="./index.js"></script>
+  </div>
 </body>
 </html>
