@@ -23,44 +23,67 @@ function renderFormatted(text, element) {
 }
 
 // ===== FORM SUBMISSION HANDLER =====
-// THIS WAS MISSING! The form wasn't working because there was no event listener
-// Now it listens for form submission and sends the user's custom prompt
 document.getElementById('prompt-form').addEventListener('submit', async (e) => {
-  // Prevent the default form submission behavior (page reload)
   e.preventDefault();
-  console.log('📋 [DEBUG] Form submitted - custom prompt from user');
-  
-  // Get the user's input from the text field
+
   const userInput = document.getElementById('prompt-input').value.trim();
   const outputDiv = document.getElementById('output');
-  
-  // Concatenate hidden selected prompts with user input
-  // Priority: use hidden selected prompts, fallback to user input
-  let finalPrompt = '';
-  
-  if (selectedPrompts.length > 0) {
-    // Use hidden selected prompts
-    finalPrompt = selectedPrompts.join('\n\n');
-    console.log('🔒 [DEBUG] Using hidden selected prompts (', selectedPrompts.length, 'items )');
-  } else if (userInput) {
-    // Fallback to user textbox input
-    finalPrompt = userInput;
-    console.log('📝 [DEBUG] Using textbox user input');
-  }
-  
-  // Validate that we have a prompt
-  console.log('🔍 [DEBUG] Validating final prompt');
-  if (!finalPrompt) {
-    console.warn('⚠️ [WARNING] No prompt available - select buttons or enter text');
-    outputDiv.textContent = '❌ Please select buttons or enter text in the prompt box';
+  const isTranslateMode = selectedPrompts.includes(TRANSLATE_PROMPT_VALUE);
+
+  if (isTranslateMode) {
+    if (!userInput) {
+      outputDiv.textContent = 'Please enter text in the prompt box to translate.';
+      return;
+    }
+
+    outputDiv.textContent = 'Translating...';
+
+    try {
+      const params = new URLSearchParams({
+        client: 'gtx',
+        sl: 'auto',
+        tl: 'en',
+        dt: 't',
+        q: userInput,
+      });
+
+      const response = await fetch(`https://translate.googleapis.com/translate_a/single?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`Translate API HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const translatedText = Array.isArray(data?.[0])
+        ? data[0].map((part) => part?.[0] || '').join('')
+        : '';
+
+      if (!translatedText) {
+        throw new Error('Empty translation from API');
+      }
+
+      renderFormatted(translatedText, outputDiv);
+    } catch (error) {
+      outputDiv.textContent = `Error: ${error.message}`;
+    }
+
     return;
   }
-  
+
+  let finalPrompt = '';
+  if (selectedPrompts.length > 0) {
+    finalPrompt = selectedPrompts.join('\n\n');
+  } else if (userInput) {
+    finalPrompt = userInput;
+  }
+
+  if (!finalPrompt) {
+    outputDiv.textContent = 'Please select buttons or enter text in the prompt box';
+    return;
+  }
+
   outputDiv.textContent = 'Loading...';
-  console.log('📝 [DEBUG] Final prompt to send:', finalPrompt.substring(0, 50) + (finalPrompt.length > 50 ? '...' : ''));
-  
+
   try {
-    console.log('🌐 [DEBUG] Sending POST request to /api/generate');
     const response = await fetch('/api/generate', {
       method: 'POST',
       headers: {
@@ -69,56 +92,54 @@ document.getElementById('prompt-form').addEventListener('submit', async (e) => {
       body: JSON.stringify({ prompt: finalPrompt }),
     });
 
-    console.log('📊 [DEBUG] Response status:', response.status);
-    
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('❌ [ERROR] HTTP error! Status:', response.status);
-      console.error('❌ [ERROR] Error details:', errorData);
-      throw new Error(`HTTP ${response.status}: ${errorData.error || 'Server error'}`);
+      throw new Error(data.error || `HTTP ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log('✅ [DEBUG] Response received successfully');
-    console.log('📄 [DEBUG] Result length:', data.result.length, 'characters');
-    
-    // Display the result in the output div (supports **bold** markers)
-    renderFormatted(data.result, outputDiv);
+    renderFormatted(data.result || '', outputDiv);
   } catch (error) {
-    console.error('❌ [ERROR] Fetch error:', error.message);
-    outputDiv.textContent = `❌ Error: ${error.message}\n\nTroubleshooting:\n1. Ensure server is running: npm start\n2. Check GROQ_API_KEY in .env file\n3. Check browser console for details`;
+    outputDiv.textContent = `Error: ${error.message}`;
   }
 });
 
 // ===== QUICK PROMPT BUTTONS HANDLER =====
-// This handles the array of selectable buttons for quick prompts
-// Values are stored HIDDEN in selectedPrompts array (not visible in textbox)
-document.querySelectorAll('.prompt-btn').forEach(button => {
+// Translate is exclusive: it cannot be selected together with other prompt buttons.
+const TRANSLATE_PROMPT_VALUE = 'Translate';
+const promptButtons = Array.from(document.querySelectorAll('.prompt-btn'));
+
+function syncSelectedButtons() {
+  promptButtons.forEach((btn) => {
+    const value = btn.getAttribute('data-value');
+    btn.classList.toggle('selected', selectedPrompts.includes(value));
+  });
+}
+
+promptButtons.forEach((button) => {
   button.addEventListener('click', (e) => {
-    // Prevent default button behavior
     e.preventDefault();
-    
-    // Get the button's placeholder value
+
     const promptValue = button.getAttribute('data-value');
-    const promptInput = document.getElementById('prompt-input');
-    
-    // Toggle the 'selected' class on the button
-    button.classList.toggle('selected');
-    console.log('🔘 [DEBUG] Button clicked:', promptValue);
-    
-    // Toggle value in HIDDEN selectedPrompts array (not visible in textbox)
-    if (button.classList.contains('selected')) {
-      // Button is now selected - add to hidden array
-      selectedPrompts.push(promptValue);
-      console.log('➕ [DEBUG] Added to hidden state:', promptValue);
+    const isTranslate = promptValue === TRANSLATE_PROMPT_VALUE;
+    const isSelecting = !button.classList.contains('selected');
+
+    if (isSelecting) {
+      if (isTranslate) {
+        // Translate replaces every other selected prompt.
+        selectedPrompts = [TRANSLATE_PROMPT_VALUE];
+      } else {
+        // Any non-translate selection removes Translate if it was selected.
+        selectedPrompts = selectedPrompts.filter((p) => p !== TRANSLATE_PROMPT_VALUE);
+        if (!selectedPrompts.includes(promptValue)) {
+          selectedPrompts.push(promptValue);
+        }
+      }
     } else {
-      // Button is now deselected - remove from hidden array
-      selectedPrompts = selectedPrompts.filter(p => p !== promptValue);
-      console.log('➖ [DEBUG] Removed from hidden state:', promptValue);
+      selectedPrompts = selectedPrompts.filter((p) => p !== promptValue);
     }
-    
-    // Display a COUNT indicator in textbox (not the actual values)
-    console.log('📊 [DEBUG] Total hidden prompts:', selectedPrompts.length);
-    console.log('✅ [DEBUG] Textbox remains unchanged - preserves user input');
+
+    syncSelectedButtons();
+    console.log('[DEBUG] Button clicked:', promptValue);
+    console.log('[DEBUG] Total hidden prompts:', selectedPrompts.length);
   });
 });

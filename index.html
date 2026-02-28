@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="./style.css">
+<title>AI Travel Assistant</title>
+</head>
+<body>
+  <div class="container">
+  <div class="heading">
+  <h1>AI Travel Assistant</h1>
+  <p>Get personalized travel recommendations and insights based on your preferences. Select from the options</p>
+  </div>
+<form id="prompt-form">
+  <input type="text" id="prompt-input" placeholder="Enter your prompt here">
+  <button type="submit">Submit Prompt</button>
+</form>
+
+<!-- Array of selectable prompt buttons -->
+<div id="prompt-buttons-container">
+  <h3>What do you want to do?</h3>
+  <div class="prompt-buttons">
+    <button class="prompt-btn" data-value="Plan an itenerary of this place">Itenerary</button>
+    <button class="prompt-btn" data-value="Restaurants, Cafes and hidden gems of this place">Restaurants, Cafes and Hidden Gems</button>
+    <button class="prompt-btn" data-value="Translate">Translate</button>
+    <button class="prompt-btn" data-value="Important tourist,music Events at the mentioned place">Events</button>
+    <button class="prompt-btn" data-value="Curated playlist for this place">Playlist</button>
+    <button class="prompt-btn" data-value="Themed routes,multimodal routes,multi vehicle-type routes SEPARATELY + their cost + ride sharing / taxi integration reviews + vehicle avalability and timing(like bike,scooter for rental) in the mentioned place">Routes</button>
+    <button class="prompt-btn" data-value="Local tips and cultural experiences and etiquette + Budget recommendations and cost-saving tips of the given place">Local Tips</button>  
+    <button class="prompt-btn" data-value="About, history, currency, languages - list history in the last as a paragraph and the others as bullet points of the given place">About</button>  </div>
+  </div>
+
+<div id="output" style="white-space: pre-wrap; margin-top: 1rem;"></div>
+
+<script type="module" src="./index.js"></script>
+
+
+  </div>
+</body>
+</html>
