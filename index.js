@@ -88,7 +88,9 @@ document.getElementById('prompt-form').addEventListener('submit', async (e) => {
   }
 
   let finalPrompt = '';
-  if (selectedPrompts.length > 0) {
+  if (selectedPrompts.length > 0 && userInput) {
+    finalPrompt = `${userInput}\n\n${selectedPrompts.join('\n\n')}`;
+  } else if (selectedPrompts.length > 0) {
     finalPrompt = selectedPrompts.join('\n\n');
   } else if (userInput) {
     finalPrompt = userInput;

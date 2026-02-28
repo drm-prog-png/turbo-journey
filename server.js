@@ -27,7 +27,7 @@ try {
 
 // Route: Serve the main HTML page
 app.get('/', (req, res) => {
-  console.log('📄 [DEBUG] GET / - Serving tinker.html');
+  console.log('📄 [DEBUG] GET / - Serving index.html');
   res.sendFile('./index.html', { root: '.' });
 });
 

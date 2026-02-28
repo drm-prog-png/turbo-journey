@@ -65,9 +65,9 @@ body {
   outline: none;
   /*box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);*/
   background-color: transparent;
-  color: white;
+  color: #022f65;
 }
-
+    
 /* Send Button */
 #prompt-form button[type="submit"] {
   padding: 14px 22px;
@@ -214,4 +214,8 @@ body {
     bottom: 14px;
     padding: 9px 12px;
   }
+}
+
+h1 {
+  font: Rubik, sans-serif;
 }
