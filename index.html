@@ -8,7 +8,7 @@
   <div class="container">
   <div class="heading">
   <h1>AI Travel Assistant</h1>
-  <p>Get personalized travel recommendations and insights based on your preferences. Select from the options</p>
+  <p>Get personalized travel recommendations and insights based on your preferences. Select from the options.</p>
   </div>
 <form id="prompt-form">
   <input type="text" id="prompt-input" placeholder="Enter your prompt here">
@@ -21,7 +21,7 @@
   <div class="prompt-buttons">
     <button class="prompt-btn" data-value="Plan an itenerary of this place">Itenerary</button>
     <button class="prompt-btn" data-value="Restaurants, Cafes and hidden gems of this place">Restaurants, Cafes and Hidden Gems</button>
-    <button class="prompt-btn" data-value="Translate">Translate</button>
+    <button class="prompt-btn" data-value="Translate and also add some common phrases and words that are used in the place">Translate</button>
     <button class="prompt-btn" data-value="Important tourist,music Events at the mentioned place">Events</button>
     <button class="prompt-btn" data-value="Curated playlist for this place">Playlist</button>
     <button class="prompt-btn" data-value="Themed routes,multimodal routes,multi vehicle-type routes SEPARATELY + their cost + ride sharing / taxi integration reviews + vehicle avalability and timing(like bike,scooter for rental) in the mentioned place">Routes</button>
@@ -30,6 +30,8 @@
   </div>
 
 <div id="output" style="white-space: pre-wrap; margin-top: 1rem;"></div>
+
+<button id="back-to-top" type="button" aria-label="Back to top">Top</button>
 
 <script type="module" src="./index.js"></script>
 

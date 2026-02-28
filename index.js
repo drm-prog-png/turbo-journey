@@ -22,6 +22,28 @@ function renderFormatted(text, element) {
   element.innerHTML = withBold;
 }
 
+function scrollToOutput(element) {
+  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function setupBackToTopButton() {
+  const backToTopBtn = document.getElementById('back-to-top');
+  if (!backToTopBtn) return;
+
+  const toggleVisibility = () => {
+    const shouldShow = window.scrollY > 220;
+    backToTopBtn.classList.toggle('show', shouldShow);
+  };
+
+  window.addEventListener('scroll', toggleVisibility, { passive: true });
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  toggleVisibility();
+}
+
+
 // ===== FORM SUBMISSION HANDLER =====
 document.getElementById('prompt-form').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -39,29 +61,25 @@ document.getElementById('prompt-form').addEventListener('submit', async (e) => {
     outputDiv.textContent = 'Translating...';
 
     try {
-      const params = new URLSearchParams({
-        client: 'gtx',
-        sl: 'auto',
-        tl: 'en',
-        dt: 't',
-        q: userInput,
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: userInput, target: 'en', source: 'auto' }),
       });
 
-      const response = await fetch(`https://translate.googleapis.com/translate_a/single?${params.toString()}`);
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(`Translate API HTTP ${response.status}`);
+        throw new Error(data.error || `HTTP ${response.status}`);
       }
 
-      const data = await response.json();
-      const translatedText = Array.isArray(data?.[0])
-        ? data[0].map((part) => part?.[0] || '').join('')
-        : '';
-
-      if (!translatedText) {
+      if (!data.translatedText) {
         throw new Error('Empty translation from API');
       }
 
-      renderFormatted(translatedText, outputDiv);
+      renderFormatted(data.translatedText, outputDiv);
+      scrollToOutput(outputDiv);
     } catch (error) {
       outputDiv.textContent = `Error: ${error.message}`;
     }
@@ -98,6 +116,7 @@ document.getElementById('prompt-form').addEventListener('submit', async (e) => {
     }
 
     renderFormatted(data.result || '', outputDiv);
+    scrollToOutput(outputDiv);
   } catch (error) {
     outputDiv.textContent = `Error: ${error.message}`;
   }
@@ -143,3 +162,4 @@ promptButtons.forEach((button) => {
     console.log('[DEBUG] Total hidden prompts:', selectedPrompts.length);
   });
 });
+setupBackToTopButton();

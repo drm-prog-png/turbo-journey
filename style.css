@@ -3,6 +3,10 @@
   font-family: Rubik, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: Rubik, sans-serif;
@@ -11,41 +15,44 @@ body {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 24px;
+  padding: 32px 20px;
   overflow-y: auto;
 }
 
 /* Main container */
 .container {
-  max-width: 750px;
-  width: 90%;
-  margin: 40px auto;
-  padding: 40px;
-  background: rgba(255,255,255,0.25);
+  max-width: 980px;
+  width: min(96vw, 980px);
+  margin: 24px auto 40px;
+  padding: 44px 48px;
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(15px);
   border-radius: 25px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
-/* AI Output bubble */
-#output {
-  margin-top: 20px;
-  padding: 20px;
-  background: white;
-  border-radius: 20px;
-  border: none;
-  min-height: 80px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-  position: relative;
+.heading h1 {
+  margin: 0 0 10px;
+}
+
+.heading p {
+  margin: 0;
+  max-width: 72ch;
   line-height: 1.5;
 }
-
 
 /* Form */
 #prompt-form {
   display: flex;
   gap: 12px;
   margin-top: 25px;
+  position: sticky;
+  top: 12px;
+  z-index: 20;
+  padding: 10px;
+  background: transparent;
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
 }
 
 /* Input */
@@ -53,10 +60,12 @@ body {
   flex: 1;
   padding: 14px 20px;
   font-size: 1rem;
-  border-radius: 30px;
+  border-radius: 5px;
   border: none;
   outline: none;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  /*box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);*/
+  background-color: transparent;
+  color: white;
 }
 
 /* Send Button */
@@ -68,19 +77,19 @@ body {
   border: none;
   border-radius: 30px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 #prompt-form button[type="submit"]:hover {
-  transform: scale(1.06);
-  box-shadow: 0 6px 20px rgba(0,114,255,0.4);
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(0, 114, 255, 0.4);
 }
 
 /* Quick prompt section */
 #prompt-buttons-container {
-  margin-top: 30px;
+  margin-top: 24px;
   padding: 20px;
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 20px;
 }
 
@@ -107,19 +116,102 @@ body {
   border-radius: 50px;
   border: none;
   cursor: pointer;
-  background: rgba(255,255,255,0.6);
+  background: rgba(255, 255, 255, 0.6);
   color: #004aad;
-  transition: 0.2s;
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .prompt-btn:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
   background: white;
 }
 
 .prompt-btn.selected {
   background: linear-gradient(135deg, #022f65, #022f65);
   color: white;
-  border-radius: 4px;
-  border-color: antiquewhite;
+}
+
+/* AI Output bubble */
+#output {
+  margin-top: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 20px;
+  border: none;
+  min-height: 120px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  position: relative;
+  line-height: 1.6;
+  scroll-margin-top: 110px;
+}
+
+#prompt-input:focus-visible,
+#prompt-form button[type="submit"]:focus-visible,
+.prompt-btn:focus-visible {
+  outline: 3px solid rgba(2, 47, 101, 0.45);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 16px 12px;
+  }
+
+  .container {
+    width: 100%;
+    margin: 10px auto 20px;
+    padding: 24px 18px;
+  }
+
+  #prompt-form {
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #prompt-form button[type="submit"] {
+    width: 100%;
+  }
+}
+#back-to-top {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #00c6ff, #022f65);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(2, 47, 101, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(14px);
+  transition: opacity 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+  z-index: 40;
+}
+
+#back-to-top.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+#back-to-top:hover {
+  box-shadow: 0 10px 24px rgba(2, 47, 101, 0.38);
+}
+
+#back-to-top:focus-visible {
+  outline: 3px solid rgba(2, 47, 101, 0.45);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  #back-to-top {
+    right: 14px;
+    bottom: 14px;
+    padding: 9px 12px;
+  }
 }

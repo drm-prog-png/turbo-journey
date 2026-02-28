@@ -28,7 +28,7 @@ try {
 // Route: Serve the main HTML page
 app.get('/', (req, res) => {
   console.log('📄 [DEBUG] GET / - Serving tinker.html');
-  res.sendFile('./tinker.html', { root: '.' });
+  res.sendFile('./index.html', { root: '.' });
 });
 
 // Route: API endpoint for generating text with Groq
@@ -90,6 +90,46 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
+// Route: API endpoint for translation
+app.post('/api/translate', async (req, res) => {
+  try {
+    const { text, target = 'en', source = 'auto' } = req.body || {};
+
+    if (!text || !String(text).trim()) {
+      return res.status(400).json({ error: 'Text is required for translation' });
+    }
+
+    const params = new URLSearchParams({
+      client: 'gtx',
+      sl: String(source),
+      tl: String(target),
+      dt: 't',
+      q: String(text),
+    });
+
+    const response = await fetch(`https://translate.googleapis.com/translate_a/single?${params.toString()}`);
+    if (!response.ok) {
+      return res.status(502).json({ error: `Translate API HTTP ${response.status}` });
+    }
+
+    const data = await response.json();
+    const translatedText = Array.isArray(data?.[0])
+      ? data[0].map((part) => part?.[0] || '').join('')
+      : '';
+
+    if (!translatedText) {
+      return res.status(502).json({ error: 'Translate API returned empty text' });
+    }
+
+    return res.json({
+      translatedText,
+      sourceLanguage: data?.[2] || source,
+      targetLanguage: target,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Translation failed' });
+  }
+});
 // Health check endpoint (useful for testing server is running)
 app.get('/health', (req, res) => {
   console.log('💚 [DEBUG] GET /health - Health check');
