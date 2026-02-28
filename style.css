@@ -31,8 +31,20 @@ body {
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
-.heading h1 {
+.heading-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   margin: 0 0 10px;
+}
+
+.heading-title h1 {
+  margin: 0;
+}
+
+.chatbot-icon {
+  font-size: 1.4rem;
+  line-height: 1;
 }
 
 .heading p {
